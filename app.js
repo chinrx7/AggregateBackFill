@@ -12,6 +12,8 @@ Task = async () => {
 
     const header = { headers: { Authorization: token } }
 
+    let SendCount =0 ;
+
     aggConfig.forEach(async a => {
         while (startT <= endT) {
             const s = new Date(startT)
@@ -22,21 +24,24 @@ Task = async () => {
             let result;
             await axios.post(config.APIUrl + 'getplotdata', Treqs, header)
                 .then((res => {
-                    if(res.data[0] !== null){
+                    if (res.data[0] !== null) {
                         result = res.data;
                     }
                 }))
 
 
             const saveReq = tranFormData(result);
+            //console.log(saveReq)
+            if (saveReq.length > 0) {
+                SendCount++;
+                await axios.post(config.APIUrl + 'insertagg', saveReq, header);
+            }
 
-            await axios.post(config.APIUrl + 'insertagg', saveReq, header)
-                
 
             startT = new Date(e);
         }
     });
-    console.log('Done')
+    console.log('Done Send ')
 }
 
 tranFormData = (resData) => {
